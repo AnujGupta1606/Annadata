@@ -1,20 +1,64 @@
-package com.example.androidproject
+package com.example.feedforward
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import android.os.Handler
+import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
-class Splash : AppCompatActivity() {
+class SplashActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_splash)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            checkUserStatus()
+        }, 2000)
+    }
+
+    private fun checkUserStatus() {
+        val auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+
+        if (currentUser == null) {
+           
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        } else {
+          
+            fetchUserRoleAndRedirect(currentUser.uid)
         }
+    }
+
+    private fun fetchUserRoleAndRedirect(uid: String) {
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("Users").document(uid).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val role = document.getString("role")
+
+                    val intent = if (role.equals("NGO", ignoreCase = true)) {
+                        Intent(this, NgoDashboardActivity::class.java)
+                    } else {
+                        Intent(this, HomeActivity::class.java)
+                    }
+
+                    startActivity(intent)
+                    finish()
+                } else {
+              
+                    startActivity(Intent(this, LoginActivity::class.java))
+                    finish()
+                }
+            }
+            .addOnFailureListener {
+        
+                startActivity(Intent(this, LoginActivity::class.java))
+                finish()
+            }
     }
 }
