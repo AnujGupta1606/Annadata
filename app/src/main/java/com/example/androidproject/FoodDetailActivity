@@ -1,0 +1,68 @@
+package com.example.feedforward
+
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.firestore.FirebaseFirestore
+
+class FoodDetailActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_food_detail)
+
+        val foodName = intent.getStringExtra("foodName")
+        val location = intent.getStringExtra("location")
+        val quantity = intent.getStringExtra("quantity")
+        val donorName = intent.getStringExtra("donorName")
+        val phoneNumber = intent.getStringExtra("phoneNumber")
+        val donationId = intent.getStringExtra("donationId")
+
+     
+        val tvName = findViewById<TextView>(R.id.detailFoodName)
+        val tvQty = findViewById<TextView>(R.id.detailQuantity)
+        val tvLoc = findViewById<TextView>(R.id.detailLocation)
+        val tvDonor = findViewById<TextView>(R.id.detailDonorName)
+        val tvPhone = findViewById<TextView>(R.id.detailPhone)
+        val btnCall = findViewById<Button>(R.id.btnCallDonor)
+        val btnConfirm = findViewById<Button>(R.id.btnConfirmPickup)
+
+  
+        tvName.text = foodName
+        tvQty.text = "Quantity: $quantity"
+        tvLoc.text = location
+        tvDonor.text = "Donor: $donorName"
+        tvPhone.text = "Contact: $phoneNumber"
+
+        btnCall.setOnClickListener {
+            val intent = Intent(Intent.ACTION_DIAL)
+            intent.data = Uri.parse("tel:$phoneNumber")
+            startActivity(intent)
+        }
+
+     
+        btnConfirm.setOnClickListener {
+            if (donationId != null) {
+                btnConfirm.isEnabled = false
+                btnConfirm.text = "Processing..."
+
+                FirebaseFirestore.getInstance().collection("Donations")
+                    .document(donationId)
+                    .update("status", "claimed")
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Food Claimed! Please proceed to pickup.", Toast.LENGTH_LONG).show()
+                        finish()
+                    }
+                    .addOnFailureListener {
+                        btnConfirm.isEnabled = true
+                        btnConfirm.text = "Confirm Pickup"
+                        Toast.makeText(this, "Error claiming food", Toast.LENGTH_SHORT).show()
+                    }
+            }
+        }
+    }
+}
