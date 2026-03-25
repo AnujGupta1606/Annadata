@@ -1,0 +1,40 @@
+package com.example.feedforward
+
+
+
+import android.content.Intent
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
+
+class RoleSelectionActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_role_selection)
+
+       
+        supportActionBar?.hide()
+
+        val donorCard = findViewById<CardView>(R.id.btnDonorRole)
+        val ngoCard = findViewById<CardView>(R.id.btnNgoRole)
+
+        donorCard.setOnClickListener {
+            navigateToSignup("Donor")
+        }
+
+        // When "NGO" is clicked
+        ngoCard.setOnClickListener {
+            navigateToSignup("NGO")
+        }
+    }
+
+    private fun navigateToSignup(role: String) {
+        val intent = Intent(this, SignupActivity::class.java)
+     
+        intent.putExtra("SELECTED_ROLE", role)
+        startActivity(intent)
+  
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+    }
+}
