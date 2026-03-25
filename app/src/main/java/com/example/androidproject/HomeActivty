@@ -1,0 +1,101 @@
+package com.example.feedforward
+
+import android.content.Intent
+import android.os.Bundle
+import android.widget.ImageButton
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+
+class HomeActivity : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
+    private lateinit var welcomeUser: TextView
+    private lateinit var tvDonationCount: TextView 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_home)
+
+
+        auth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
+
+        welcomeUser = findViewById(R.id.welcomeUser)
+        tvDonationCount = findViewById(R.id.tvDonationCount)
+        val cardDonate = findViewById<CardView>(R.id.cardDonate)
+        val cardHistory = findViewById<CardView>(R.id.cardHistory)
+        val chatBtn = findViewById<FloatingActionButton>(R.id.chatBtn)
+        val btnLogout = findViewById<ImageButton>(R.id.btnLogout)
+
+ 
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+
+            db.collection("Users").document(userId).get()
+                .addOnSuccessListener { document ->
+                    if (document != null && document.exists()) {
+                        val name = document.getString("name")
+                        welcomeUser.text = "Welcome, $name!"
+                    }
+                }
+                .addOnFailureListener {
+                    welcomeUser.text = "Welcome, Annadataa"
+                }
+
+            fetchDonationCount(userId)
+        }
+
+       
+        btnLogout.setOnClickListener {
+            logout()
+        }
+
+       
+        cardDonate.setOnClickListener {
+            startActivity(Intent(this, DonateFoodActivity::class.java))
+        }
+
+      
+        cardHistory.setOnClickListener {
+            val intent = Intent(this, DonationHistoryActivity::class.java)
+            startActivity(intent)
+        }
+
+        chatBtn.setOnClickListener {
+            val intent = Intent(this, ChatBotActivity::class.java)
+            startActivity(intent)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        }
+    }
+
+    private fun fetchDonationCount(userId: String) {
+   
+        db.collection("Donations")
+            .whereEqualTo("donorId", userId)
+            .addSnapshotListener { snapshots, e ->
+                if (e != null) {
+                    return@addSnapshotListener
+                }
+
+                if (snapshots != null) {
+         
+                    tvDonationCount.text = snapshots.size().toString()
+                }
+            }
+    }
+
+    private fun logout() {
+        auth.signOut()
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
+        finish()
+    }
+}
