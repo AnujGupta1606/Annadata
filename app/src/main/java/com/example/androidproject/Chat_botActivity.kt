@@ -27,7 +27,7 @@ class ChatBotActivity : AppCompatActivity() {
     // Corrected model name to 1.5-flash (2.5 doesn't exist yet!)
     private val generativeModel = GenerativeModel(
         modelName = "gemini-2.5-flash",
-        apiKey = "AIzaSyAKmlqzCpjyTkEWhicXdFi8iJMGUF6Ywok"
+        apiKey = "Your API KEY"
     )
     // send both to me
 
