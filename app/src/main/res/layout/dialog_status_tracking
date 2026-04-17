@@ -1,0 +1,35 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tvTrackTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Track Donation"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp"/>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+        <View android:id="@+id/dotPosted" android:layout_width="12dp" android:layout_height="12dp" android:background="@drawable/step_circle_green"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Donation Posted Successfully" android:layout_marginStart="12dp" android:textColor="#6D92D0"/>
+    </LinearLayout>
+
+    <View android:layout_width="2dp" android:layout_height="30dp" android:background="#E2E8F0" android:layout_marginStart="5dp"/>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+        <View android:id="@+id/dotAccepted" android:layout_width="12dp" android:layout_height="12dp" android:background="@drawable/step_circle_gray"/>
+        <TextView android:id="@+id/tvAcceptedText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Waiting for NGO to Accept..." android:layout_marginStart="12dp" android:textColor="#64748B"/>
+    </LinearLayout>
+
+    <View android:layout_width="2dp" android:layout_height="30dp" android:background="#E2E8F0" android:layout_marginStart="5dp"/>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+        <View android:id="@+id/dotCollected" android:layout_width="12dp" android:layout_height="12dp" android:background="@drawable/step_circle_gray"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Food Collected" android:layout_marginStart="12dp" android:textColor="#64748B"/>
+    </LinearLayout>
+
+</LinearLayout>
